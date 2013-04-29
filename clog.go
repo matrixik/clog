@@ -10,6 +10,7 @@ package clog
 import (
 	"fmt"
 	"io"
+	"os"
 	"sync"
 	"time"
 )
@@ -95,9 +96,10 @@ func (this *Clog) Error(format string, v ...interface{}) {
 	this.Log(LevelError, format, v...)
 }
 
-// Convenience function, will not terminate the program
+// Convenience function, will terminate the program
 func (this *Clog) Fatal(format string, v ...interface{}) {
 	this.Log(LevelFatal, format, v...)
+	os.Exit(1)
 }
 
 // Logs a message for the given level. Most callers will likely
