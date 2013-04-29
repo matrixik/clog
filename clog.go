@@ -55,11 +55,13 @@ type output struct {
 type Clog struct {
 	mtx     sync.Mutex
 	outputs []output
+	// Terminate the program on Fatal, false by default.
+	ExitOnFatal bool
 }
 
 // Instantiate a new Clog
 func NewClog() *Clog {
-	return &Clog{sync.Mutex{}, make([]output, 0)}
+	return &Clog{sync.Mutex{}, make([]output, 0), false}
 }
 
 // Adds an ouput, specifying the minimum log Level
@@ -107,10 +109,13 @@ func (this *Clog) Error(format string, v ...interface{}) {
 	this.Log(LevelError, format, v...)
 }
 
-// Convenience function, will terminate the program
+// Convenience function, will terminate the program if you set
+// ExitOnFatal to true.
 func (this *Clog) Fatal(format string, v ...interface{}) {
 	this.Log(LevelFatal, format, v...)
-	os.Exit(1)
+	if this.ExitOnFatal {
+		os.Exit(1)
+	}
 }
 
 // Logs a message for the given level. Most callers will likely
@@ -118,7 +123,8 @@ func (this *Clog) Fatal(format string, v ...interface{}) {
 func (this *Clog) Log(level Level, format string, v ...interface{}) {
 	message := fmt.Sprintf(format+"\n", v...)
 	strTimestamp := getTimestamp()
-	strFinal := fmt.Sprintf("%s [%-5s] %s", strTimestamp, levelStrings[level], message)
+	strFinal := fmt.Sprintf(
+		"%s [%-5s] %s", strTimestamp, levelStrings[level], message)
 	bytes := []byte(strFinal)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
@@ -132,5 +138,8 @@ func (this *Clog) Log(level Level, format string, v ...interface{}) {
 // Gets the timestamp string
 func getTimestamp() string {
 	now := time.Now()
-	return fmt.Sprintf("%v-%02d-%02d %02d:%02d:%02d.%03d", now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond()/1000000)
+	return fmt.Sprintf(
+		"%v-%02d-%02d %02d:%02d:%02d.%03d",
+		now.Year(), now.Month(), now.Day(),
+		now.Hour(), now.Minute(), now.Second(), now.Nanosecond()/1000000)
 }

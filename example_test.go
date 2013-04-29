@@ -10,6 +10,7 @@ import (
 var Log *clog.Clog = clog.NewClog()
 
 func Example() {
+	Log.ExitOnFatal = true
 	Log.AddOutput(os.Stdout, clog.LevelWarn)
 	Log.AddOutputRange(os.Stdout, clog.LevelDebug, clog.LevelInfo)
 	dailyFile := clog.NewDailyFile("/opt/logs/myprocess_%s.log")
