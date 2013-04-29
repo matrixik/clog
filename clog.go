@@ -21,17 +21,19 @@ type Level uint8
 const (
 	LevelFatal Level = iota
 	LevelError
-	LevelWarning
+	LevelWarn
 	LevelInfo
+	LevelDebug
 	LevelTrace
 )
 
 var levelStrings = map[Level]string{
-	LevelFatal:   "Fatal",
-	LevelError:   "Error",
-	LevelWarning: "Warning",
-	LevelInfo:    "Info",
-	LevelTrace:   "Trace",
+	LevelFatal: "Fatal",
+	LevelError: "Error",
+	LevelWarn:  "Warn",
+	LevelInfo:  "Info",
+	LevelDebug: "Debug",
+	LevelTrace: "Trace",
 }
 
 func (this Level) String() string {
@@ -74,13 +76,18 @@ func (this *Clog) Trace(format string, v ...interface{}) {
 }
 
 // Convenience function
+func (this *Clog) Debug(format string, v ...interface{}) {
+	this.Log(LevelDebug, format, v...)
+}
+
+// Convenience function
 func (this *Clog) Info(format string, v ...interface{}) {
 	this.Log(LevelInfo, format, v...)
 }
 
 // Convenience function
-func (this *Clog) Warning(format string, v ...interface{}) {
-	this.Log(LevelWarning, format, v...)
+func (this *Clog) Warn(format string, v ...interface{}) {
+	this.Log(LevelWarn, format, v...)
 }
 
 // Convenience function
@@ -98,7 +105,7 @@ func (this *Clog) Fatal(format string, v ...interface{}) {
 func (this *Clog) Log(level Level, format string, v ...interface{}) {
 	message := fmt.Sprintf(format+"\n", v...)
 	strTimestamp := getTimestamp()
-	strFinal := fmt.Sprintf("%s [%-7s] %s", strTimestamp, levelStrings[level], message)
+	strFinal := fmt.Sprintf("%s [%-5s] %s", strTimestamp, levelStrings[level], message)
 	bytes := []byte(strFinal)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
