@@ -20,21 +20,21 @@ import (
 type Level uint8
 
 const (
-	LevelFatal Level = iota
-	LevelError
-	LevelWarn
-	LevelInfo
+	LevelTrace Level = iota
 	LevelDebug
-	LevelTrace
+	LevelInfo
+	LevelWarn
+	LevelError
+	LevelFatal
 )
 
 var levelStrings = map[Level]string{
-	LevelFatal: "Fatal",
-	LevelError: "Error",
-	LevelWarn:  "Warn",
-	LevelInfo:  "Info",
-	LevelDebug: "Debug",
 	LevelTrace: "Trace",
+	LevelDebug: "Debug",
+	LevelInfo:  "Info",
+	LevelWarn:  "Warn",
+	LevelError: "Error",
+	LevelFatal: "Fatal",
 }
 
 func (this Level) String() string {
@@ -62,7 +62,7 @@ func NewClog() *Clog {
 	return &Clog{sync.Mutex{}, make([]output, 0)}
 }
 
-// Adds an ouput, specifying the maximum log Level
+// Adds an ouput, specifying the minimum log Level
 // you want to be written to this output. For instance,
 // if you pass Warn for level, all logs of type
 // Warn, Error, and Fatal would be logged to this output.
@@ -123,7 +123,7 @@ func (this *Clog) Log(level Level, format string, v ...interface{}) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
 	for _, output := range this.outputs {
-		if output.levelMin >= level && output.levelMax <= level {
+		if output.levelMin <= level && level <= output.levelMax {
 			output.writer.Write(bytes)
 		}
 	}
