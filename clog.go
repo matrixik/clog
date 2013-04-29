@@ -62,8 +62,8 @@ func NewClog() *Clog {
 
 // Adds an ouput, specifying the maximum log Level
 // you want to be written to this output. For instance,
-// if you pass Warning for level, all logs of type
-// Warning, Error, and Fatal would be logged to this output.
+// if you pass Warn for level, all logs of type
+// Warn, Error, and Fatal would be logged to this output.
 func (this *Clog) AddOutput(writer io.Writer, level Level) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
