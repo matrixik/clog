@@ -46,8 +46,9 @@ func (this Level) String() string {
 }
 
 type output struct {
-	writer io.Writer
-	level  Level
+	writer   io.Writer
+	levelMin Level
+	levelMax Level
 }
 
 // The Logger
@@ -68,7 +69,17 @@ func NewClog() *Clog {
 func (this *Clog) AddOutput(writer io.Writer, level Level) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
-	this.outputs = append(this.outputs, output{writer, level})
+	this.outputs = append(this.outputs, output{writer, level, LevelFatal})
+}
+
+// Adds an ouput, specifying the minimum and maximum log Level
+// you want to be written to this output. For instance,
+// if you pass Trace for levelMin and Warn for levelMax, all logs of type
+// Trace, Debug, Info and Warn would be logged to this output.
+func (this *Clog) AddOutputRange(writer io.Writer, levelMin, levelMax Level) {
+	this.mtx.Lock()
+	defer this.mtx.Unlock()
+	this.outputs = append(this.outputs, output{writer, levelMin, levelMax})
 }
 
 // Convenience function
@@ -112,7 +123,7 @@ func (this *Clog) Log(level Level, format string, v ...interface{}) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
 	for _, output := range this.outputs {
-		if output.level >= level {
+		if output.levelMin >= level && output.levelMax <= level {
 			output.writer.Write(bytes)
 		}
 	}
