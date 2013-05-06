@@ -23,18 +23,18 @@ const (
 	LevelTrace Level = iota
 	LevelDebug
 	LevelInfo
-	LevelWarn
+	LevelWarning
 	LevelError
 	LevelFatal
 )
 
 var levelStrings = map[Level]string{
-	LevelTrace: "Trace",
-	LevelDebug: "Debug",
-	LevelInfo:  "Info",
-	LevelWarn:  "Warn",
-	LevelError: "Error",
-	LevelFatal: "Fatal",
+	LevelTrace:   "Trace",
+	LevelDebug:   "Debug",
+	LevelInfo:    "Info",
+	LevelWarning: "Warning",
+	LevelError:   "Error",
+	LevelFatal:   "Fatal",
 }
 
 func (this Level) String() string {
@@ -66,8 +66,8 @@ func NewClog() *Clog {
 
 // Adds an ouput, specifying the minimum log Level
 // you want to be written to this output. For instance,
-// if you pass Warn for level, all logs of type
-// Warn, Error, and Fatal would be logged to this output.
+// if you pass Warning for level, all logs of type
+// Warning, Error, and Fatal would be logged to this output.
 func (this *Clog) AddOutput(writer io.Writer, level Level) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
@@ -76,8 +76,8 @@ func (this *Clog) AddOutput(writer io.Writer, level Level) {
 
 // Adds an ouput, specifying the minimum and maximum log Level
 // you want to be written to this output. For instance,
-// if you pass Trace for levelMin and Warn for levelMax, all logs of type
-// Trace, Debug, Info and Warn would be logged to this output.
+// if you pass Trace for levelMin and Warning for levelMax, all logs of type
+// Trace, Debug, Info and Warning would be logged to this output.
 func (this *Clog) AddOutputRange(writer io.Writer, levelMin, levelMax Level) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
@@ -100,8 +100,8 @@ func (this *Clog) Info(format string, v ...interface{}) {
 }
 
 // Convenience function
-func (this *Clog) Warn(format string, v ...interface{}) {
-	this.Log(LevelWarn, format, v...)
+func (this *Clog) Warning(format string, v ...interface{}) {
+	this.Log(LevelWarning, format, v...)
 }
 
 // Convenience function
@@ -124,7 +124,7 @@ func (this *Clog) Log(level Level, format string, v ...interface{}) {
 	message := fmt.Sprintf(format+"\n", v...)
 	strTimestamp := getTimestamp()
 	strFinal := fmt.Sprintf(
-		"%s [%-5s] %s", strTimestamp, levelStrings[level], message)
+		"%s [%-7s] %s", strTimestamp, levelStrings[level], message)
 	bytes := []byte(strFinal)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
