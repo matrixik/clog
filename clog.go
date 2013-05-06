@@ -29,12 +29,12 @@ const (
 )
 
 var levelStrings = map[Level]string{
-	LevelTrace:   "Trace",
-	LevelDebug:   "Debug",
-	LevelInfo:    "Info",
-	LevelWarning: "Warning",
-	LevelError:   "Error",
-	LevelFatal:   "Fatal",
+	LevelTrace:   "TRACE",
+	LevelDebug:   "DEBUG",
+	LevelInfo:    "INFO",
+	LevelWarning: "WARNING",
+	LevelError:   "ERROR",
+	LevelFatal:   "FATAL",
 }
 
 func (this Level) String() string {
